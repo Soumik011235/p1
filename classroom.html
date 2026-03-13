@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+background:linear-gradient(#f0f2f5);
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+color:black;
+}
+
+.container{
+width:100%;
+max-width:420px;
+background:#F0F4F5;
+padding:25px;
+border-radius:20px;
+box-shadow:0 15px 40px rgba(0,0,0,0.4);
+}
+
+h1{
+text-align:center;
+margin-bottom:25px;
+}
+
+/* PODIUM */
+
+.podium{
+display:flex;
+align-items:flex-end;
+justify-content:center;
+gap:10px;
+margin-bottom:25px;
+}
+
+.block{
+flex:1;
+text-align:center;
+border-radius:10px 10px 0 0;
+position:relative;
+padding-top:10px;
+animation:rise .7s ease;
+}
+
+.block img{
+width:50px;
+height:50px;
+border-radius:50%;
+border:3px solid white;
+}
+
+.block h3{
+font-size:14px;
+margin-top:5px;
+}
+
+.block p{
+font-size:13px;
+}
+
+.first{
+height:150px;
+background:#14C1EB;
+color:black;
+}
+
+.second{
+height:120px;
+background:silver;
+color:black;
+}
+
+.third{
+height:100px;
+background:#EB14C1;
+color:black;
+}
+
+.rank{
+position:absolute;
+top:1px;
+left:50%;
+transform:translateX(-50%);
+background:black;
+color:white;
+padding:4px 10px;
+border-radius:20px;
+font-size:10px;
+}
+
+/* SCROLL LIST */
+
+.listContainer{
+max-height:260px;
+overflow-y:auto;
+border-radius:10px;
+}
+
+ul{
+list-style:none;
+}
+
+li{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:12px;
+border-bottom:1px solid rgba(255,255,255,0.15);
+font-size:14px;
+transition:0.3s;
+}
+
+li:hover{
+background:rgba(255,255,255,0.1);
+}
+
+.profile{
+display:flex;
+align-items:center;
+gap:10px;
+flex:1;
+}
+
+.profile img{
+width:35px;
+height:35px;
+border-radius:50%;
+}
+
+.points{
+color:black;
+font-weight:bold;
+}
+
+/* CURRENT USER */
+
+.me{
+background:#EB1456 !important;
+}
+
+/* ANIMATION */
+
+@keyframes rise{
+from{
+transform:translateY(40px);
+opacity:0;
+}
+to{
+transform:translateY(0);
+opacity:1;
+}
+}
+
+/* RESPONSIVE */
+
+@media(max-width:500px){
+
+.container{
+padding:18px;
+}
+
+.block img{
+width:45px;
+height:45px;
+}
+
+h1{
+font-size:20px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Leaderboard</h1>
+
+<div class="podium" id="podium"></div>
+
+<div class="listContainer">
+<ul id="leaderboard"></ul>
+</div>
+
+</div>
+
+<script>
+
+/* CURRENT USER */
+
+const currentUser = "Soumik Debnath";
+
+/* USERS DATA */
+
+const users = [
+
+{name:"Sumit haldar",points:32050,img:"https://pbs.twimg.com/profile_images/2026688980230746121/H1uqhPGO_400x400.jpg"},
+{name:"Rohit Sharma",points:16900,img:"https://www.livemint.com/lm-img/img/2024/07/03/original/Rohit_Sharma_World_Cup_1720011997730.jpg"},
+{name:"Abhinav Kumar",points:14790,img:"https://tse3.mm.bing.net/th/id/OIP.P5x4tqlWO9kkTCxcwFZ_ygHaE7?pid=Api&P=0&h=1807"},
+{name:"Ms Dhoni",points:3278,img:"https://wallpaperaccess.com/full/8669687.jpg"},
+{name:"Virat Kohli",points:2356,img:"https://cdn.britannica.com/48/252748-050-C514EFDB/Virat-Kohli-India-celebrates-50th-century-Cricket-November-15-2023.jpg"},
+{name:" kl Rahul",points:2267,img:"https://tse2.mm.bing.net/th/id/OIP.4rdBW0nGT8iJTUz_EIVpwAHaE8?pid=Api&P=0&h=180"},
+{name:"Soumik Debnath",points:1980,img:"https://media.licdn.com/dms/image/v2/D4E03AQFn-lB6_0NSZA/profile-displayphoto-scale_200_200/B4EZp5htwJIoAY-/0/1762975474710?e=1775088000&v=beta&t=MYgmwV50DqJ_74O8-a9IVDTR9hiW-e6C18xxEaB5fGc"},
+{name:"Srys Iyer",points:1897,img:"https://tse2.mm.bing.net/th/id/OIP.kG4B4I4V8kK89xeVt1Ap6wHaEK?pid=Api&P=0&h=180"},
+{name:"Ravindra Jadeja",points:1500,img:"https://staticg.sportskeeda.com/editor/2023/12/37be1-17018597422895-1920.jpg"},
+{name:"Jaspit Bumrah",points:1200,img:"https://cdn.britannica.com/34/264734-050-85D1D907/jasprit-bumrah-india-ICC-mens-T20-cricket-world-cup-june-2024.jpg"},
+{name:"Hardik pandya",points:1100,img:"https://statico.sportskeeda.com/editor/2025/02/9d2c0-17400342506631-1920.jpg"},
+{name:"Axar Patel",points:900,img:"https://tse3.mm.bing.net/th?id=OIF.FnpkHNpWD%2b3U5qMkY28nsQ&pid=Api&P=0&h=1801"}
+
+];
+
+/* SORT USERS */
+
+users.sort((a,b)=>b.points-a.points);
+
+/* PODIUM */
+
+const podium=document.getElementById("podium");
+const order=[1,0,2];
+
+order.forEach(i=>{
+
+const u=users[i];
+
+const div=document.createElement("div");
+div.classList.add("block");
+
+if(i===0) div.classList.add("first");
+if(i===1) div.classList.add("second");
+if(i===2) div.classList.add("third");
+
+div.innerHTML=`
+<span class="rank">${i+1}</span>
+<img src="${u.img}">
+<h3>${u.name}</h3>
+<p>${u.points}</p>
+`;
+
+podium.appendChild(div);
+
+});
+
+/* LIST */
+
+const list=document.getElementById("leaderboard");
+
+users.forEach((u,i)=>{
+
+if(i<3) return;
+
+const li=document.createElement("li");
+
+if(u.name===currentUser) li.classList.add("me");
+
+li.innerHTML=`
+<span>${i+1}</span>
+
+<div class="profile">
+<img src="${u.img}">
+<span>${u.name}</span>
+</div>
+
+<span class="points">${u.points}</span>
+`;
+
+list.appendChild(li);
+
+});
+
+/* AUTO SCROLL TO CURRENT USER */
+
+setTimeout(()=>{
+
+const me=document.querySelector(".me");
+
+if(me){
+me.scrollIntoView({
+behavior:"smooth",
+block:"center"
+});
+}
+
+},300);
+
+</script>
+
+</body>
+</html>
